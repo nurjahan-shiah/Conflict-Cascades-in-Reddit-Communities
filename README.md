@@ -179,6 +179,19 @@ Counting all three windows over the 82,210 negative events takes under 20 second
 | Val (2016) | 51 | 4,309,944 | 14,956 | 0.35% | 56.9% |
 | Test (Jan-Apr 2017) | 16 | 1,493,324 | 5,126 | 0.34% | 55.6% |
 
+## Temporal patterns: timestamp-shuffle baseline
+
+```powershell
+python src/time_shuffle.py data/processed/edges.csv --csv time-shuffle.csv --trials 100 --seed 0
+```
+
+Each trial permutes timestamps across negative events while preserving directed
+pairs, their multiplicities, and the complete timestamp distribution. The CSV
+compares observed pair counts and distinct follow-up counts with the null mean,
+sample standard deviation, and z-score for each pattern and window. A blank
+z-score indicates zero variation across trials. For a quick check, pass
+`--trials 2 --deltas 1`.
+
 ## Acknowledgment
 
 Generative AI assisted with the initial code, tests, and documentation.
