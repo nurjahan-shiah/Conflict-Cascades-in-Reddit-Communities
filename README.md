@@ -182,7 +182,7 @@ Counting all three windows over the 82,210 negative events takes under 20 second
 ## Temporal patterns: timestamp-shuffle baseline
 
 ```powershell
-python src/time_shuffle.py data/processed/edges.csv --csv time-shuffle.csv --trials 100 --seed 0
+python src/time_shuffle.py data/processed/edges.csv --csv figures/time_shuffle.csv --trials 100 --seed 0
 ```
 
 Each trial permutes timestamps across negative events while preserving directed
@@ -191,6 +191,27 @@ compares observed pair counts and distinct follow-up counts with the null mean,
 sample standard deviation, and z-score for each pattern and window. A blank
 z-score indicates zero variation across trials. For a quick check, pass
 `--trials 2 --deltas 1`.
+
+## Sign-shuffle baseline
+
+```powershell
+python src/sign_shuffle.py data/processed/edges.csv --csv figures/sign_shuffle.csv --trials 100 --seed 0
+```
+
+The input must be the cleaned CSV containing both signs. Each trial assigns the
+original number of negative signs uniformly across all event positions, retaining
+the full network's directed endpoints, timestamps, and event multiplicities.
+Negative degree and the negative timestamp distribution may change. Sampling
+positions without replacement implements the same null distribution as permuting
+binary signs. The output schema and undefined-z-score policy match the timestamp
+baseline. Both commands accept explicit trial counts, windows, and seeds.
+
+The CSVs in `figures/` contain 100-trial results for seed 0 and all three windows.
+All observed counts match `data/processed/patterns.csv`. One-day repeated pairs
+fall below the timestamp null (z = -22.78), while three- and seven-day repeated
+pairs exceed it (z = 5.84 and 28.22). Seven-day reciprocal pairs have z = 13.76
+under the timestamp null and 2.65 under the sign null. Z-scores describe deviation
+from the sampled null distributions and do not by themselves supply tail probabilities.
 
 ## Acknowledgment
 

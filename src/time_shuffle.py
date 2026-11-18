@@ -17,8 +17,12 @@ def shuffle_timestamps(events, rng):
             for (source, target, _), timestamp in zip(events, timestamps)]
 
 
-def compare(events, deltas, trials, seed):
-    """Summarize observed and randomized counts for each window and metric."""
+def compare(events, deltas, trials, seed, *, sampler=None):
+    """Summarize observed and randomized counts for each window and metric.
+
+    An optional sampler(rng) returns negative events for an alternative null
+    model. Omitting it retains the timestamp-shuffle behavior.
+    """
     if trials < 2:
         raise ValueError("at least two trials are required")
     observed = count_patterns(events, deltas)
@@ -30,7 +34,8 @@ def compare(events, deltas, trials, seed):
     }
     rng = random.Random(seed)
     for _ in range(trials):
-        simulated = count_patterns(shuffle_timestamps(events, rng), deltas)
+        randomized = sampler(rng) if sampler else shuffle_timestamps(events, rng)
+        simulated = count_patterns(randomized, deltas)
         for (delta, pattern, metric), counts in samples.items():
             counts.append(simulated[delta][pattern][metric])
     for (delta, pattern, metric), counts in samples.items():
